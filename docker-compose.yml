@@ -1,6 +1,37 @@
 version: '3'
 services:
   node-server:
+    container_name: node
     build: .
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=${PMA_HOST}
+      - PMA_PORT=${PMA_PORT}
+      - PMA_USER=${PMA_USER}
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+  db:
+    image: mysql:latest
+    container_name: db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      - PMA_HOST=${PMA_HOST}
+      - PMA_PORT=${PMA_PORT}
+      - PMA_USER=${PMA_USER}
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
